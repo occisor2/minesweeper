@@ -58,7 +58,7 @@ bool Game::handleInput()
 				return true;
 		}
 		break;
-	case '\n':
+	case KEY_ENTER:
 		// check if the revealed tile was a mine
 		if (board.revealTile(xpos, ypos)) {
 			if (!displayEndWindow())
