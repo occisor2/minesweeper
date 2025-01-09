@@ -1,0 +1,6 @@
+# Cmake
+CMakeUserPresets.json
+compile_commands.json
+build/
+# LSP index
+.cache/
