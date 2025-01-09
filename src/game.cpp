@@ -1,19 +1,6 @@
 #include "game.h"
-#include <ncurses.h>
+#include "term.h"
 #include <sstream>
-
-enum
-{
-	MINE_FACE = 1,
-	EMPTY_FACE,
-	ONE_FACE,
-	TWO_FACE,
-	THREE_FACE,
-	FOUR_FACE,
-	FIVE_FACE,
-	COVERED_FACE,
-	FLAG_FACE
-};
 
 Game::Game(Game::Options options)
 	: options(options),
@@ -23,21 +10,7 @@ Game::Game(Game::Options options)
 
 void Game::start()
 {
-	initscr();
-	cbreak();
-	keypad(stdscr, TRUE);
-	noecho();
-	curs_set(2);
-
-	start_color();
-	init_pair(MINE_FACE, COLOR_WHITE, COLOR_RED);
-	init_pair(EMPTY_FACE, COLOR_BLACK, COLOR_BLACK);
-	init_pair(ONE_FACE, COLOR_BLUE, COLOR_BLACK);
-	init_pair(TWO_FACE, COLOR_GREEN, COLOR_BLACK);
-	init_pair(THREE_FACE, COLOR_RED, COLOR_BLACK);
-	init_pair(FOUR_FACE, COLOR_MAGENTA, COLOR_BLACK);
-	init_pair(FIVE_FACE, COLOR_CYAN, COLOR_BLACK);
-	init_pair(FLAG_FACE, COLOR_RED, COLOR_WHITE);
+	init_term();
 
 	for (;;) {
 		draw();
@@ -45,7 +18,7 @@ void Game::start()
 			break;
 	}
 
-	endwin();
+	end_term();
 }
 
 bool Game::handleInput()
@@ -128,56 +101,40 @@ void Game::draw()
 			auto& mask = board.getMask();
 			switch (mask[row][col / 2]) {
 			case Board::MaskTile::Mine:
-				attron(COLOR_PAIR(MINE_FACE));
-				mvaddch(starty + row, startx + col, 'M');
-				attroff(COLOR_PAIR(MINE_FACE));
+				add_color_char('M', FACE_MINE, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Empty:
-				attron(COLOR_PAIR(EMPTY_FACE));
-				mvaddch(starty + row, startx + col, '*');
-				attroff(COLOR_PAIR(EMPTY_FACE));
+				add_color_char('*', FACE_EMPTY, startx + col, starty + row);
 				break;
 			case Board::MaskTile::One:
-				attron(COLOR_PAIR(ONE_FACE));
-				mvaddch(starty + row, startx + col, '1');
-				attroff(COLOR_PAIR(ONE_FACE));
+				add_color_char('1', FACE_ONE, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Two:
-				attron(COLOR_PAIR(TWO_FACE));
-				mvaddch(starty + row, startx + col, '2');
-				attroff(COLOR_PAIR(TWO_FACE));
+				add_color_char('2', FACE_TWO, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Three:
-				attron(COLOR_PAIR(THREE_FACE));
-				mvaddch(starty + row, startx + col, '3');
-				attroff(COLOR_PAIR(THREE_FACE));
+				add_color_char('3', FACE_THREE, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Four:
-				attron(COLOR_PAIR(FOUR_FACE));
-				mvaddch(starty + row, startx + col, '4');
-				attroff(COLOR_PAIR(FOUR_FACE));
+				add_color_char('4', FACE_FOUR, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Five:
-				attron(COLOR_PAIR(FIVE_FACE));
-				mvaddch(starty + row, startx + col, '5');
-				attroff(COLOR_PAIR(FIVE_FACE));
+				add_color_char('5', FACE_FIVE, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Six:
-				mvaddch(starty + row, startx + col, '6');
+				add_color_char('6', FACE_SIX, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Seven:
-				mvaddch(starty + row, startx + col, '7');
+				add_color_char('7', FACE_SEVEN, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Eight:
-				mvaddch(starty + row, startx + col, '8');
+				add_color_char('8', FACE_EIGHT, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Covered:
-				mvaddch(starty + row, startx + col, '#');
+				add_color_char('#', FACE_COVERED, startx + col, starty + row);
 				break;
 			case Board::MaskTile::Flag:
-				attron(COLOR_PAIR(FLAG_FACE));
-				mvaddch(starty + row, startx + col, 'F');
-				attroff(COLOR_PAIR(FLAG_FACE));
+				add_color_char('F', FACE_FLAG, startx + col, starty + row);
 				break;
 			}
 		}
